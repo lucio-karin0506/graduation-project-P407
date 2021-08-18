@@ -1,0 +1,10 @@
+indicator_name\
+    =['BBands',
+     'RSI',
+     'MACD',
+     'MA',
+     'EMA',
+     'CMO',
+     'STOCH',
+     'STOCHF'
+    ]

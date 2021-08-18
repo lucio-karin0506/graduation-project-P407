@@ -1,0 +1,17 @@
+[
+   { 
+      "stockcode":"005930",
+      "startdate":"2019-01-01",
+      "enddate":"2021-01-01",
+      "interval":"d",
+      
+      "indicator":
+      ["BBands(period=20,nbdevup=2,nbdevdn=2)",
+      "RSI(period=14)",
+	  "MACD(fast_period=12, slow_period=26, signal_period=9)"
+	  ],
+      
+      "strategy":
+      "if crossDown('rsi_14',45): buy('buy1', stock=0.1)\nif crossUp('rsi_14', 70): sell('sell1', stock=0.1)"
+   }
+]	

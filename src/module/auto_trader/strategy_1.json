@@ -1,0 +1,9 @@
+﻿[
+   { 
+      "indicator":
+      ["rsi(period=7)", "rsi(period=14)", "st(factor=3, period=7)", "candle_type()", "three_red()", "three_blue()"],
+      "condition": "BTC_dominance ≥ 0.6",
+      "strategy":
+      "if 'stop_loss' >= 0.3 and 'candle_type' == -1: sell('stop_loss', stock=0.6)\nif 'stop_profit' >= 0.3: sell('stop_profit', stock=0.6)\nif 'rsi_7' >= 70 and 'three_red_3' == 1: buy('buy1', stock=0.25)\nif 'rsi_7'<= 30 and 'three_blue_3' == 1: sell('sell1', stock=1)"
+   }
+]
