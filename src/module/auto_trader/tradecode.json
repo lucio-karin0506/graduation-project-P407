@@ -1,0 +1,14 @@
+[
+	{
+		"coin": "XRP_KRW",
+		"interval": "5m",
+		"buying_portion": 0.2,
+		"buying_money": 20000,
+		"max_buy_count": 2,
+		"max_sell_count": 2,
+		"buy_pyramiding_rate":2,
+		"sell_pyramiding_rate":2,
+		"strategy": 
+		["strategy_2.json"]
+	}
+]

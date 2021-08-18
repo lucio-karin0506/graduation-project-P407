@@ -1,0 +1,9 @@
+[
+{"code": "IXIC",
+"start_date": "2010-08-01",
+"end_date": "2020-07-31",
+"dtype": "D",
+"label_target_list": "close",
+"RRPB": 0.04,
+"RFPT": 0.03}
+]

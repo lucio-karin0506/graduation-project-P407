@@ -1,0 +1,8 @@
+﻿[
+   { 
+      "indicator": ["rsi(period=7)"],
+	  "condition": "BTC_dominance ≥ 0.6",
+      "strategy": 
+      "if 'stop_loss' >= 0.3: sell('stop_loss', stock=0.6)\nif 'stop_profit' >= 0.3: sell('stop_profit', stock=0.6)\nif 'rsi_7' <= 100: buy('buy1', stock=0.5)\nif 'rsi_7'> 0: sell('sell1', stock=1)"
+   }
+]
