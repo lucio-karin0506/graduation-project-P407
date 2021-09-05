@@ -8,6 +8,10 @@ from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2 import QtWidgets
 
+'''
+    - 종목 차트 메뉴
+    - 사용자가 선택한 지표 및 설정한 파라미터 트리 위젯에 표시
+'''
 class IndicatorTreeView(QTreeWidget):
     def __init__(self):
         super().__init__()
@@ -16,11 +20,13 @@ class IndicatorTreeView(QTreeWidget):
         self.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.header().setStretchLastSection(False)
 
+    # 종목 파일 경로 얻어옴
+    # 해당 종목 파일에 존재하는 지표 컬럼 및 해당 파라미터 가져옴
     def get_path(self, path):
         stock_file = os.path.split(path)
         selected_stock_name = stock_file[1].replace('.csv', '')
-        file_type = stock_file[1].split('.')[1]
 
+        # 지표 리스트 박스에서 선택한 종목 이름 텍스트 표시
         stock_name = QTreeWidgetItem([selected_stock_name])
         self.addTopLevelItem(stock_name)
 

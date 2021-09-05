@@ -1,15 +1,12 @@
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-import PySide2
-import os
-import sys
 import pandas as pd
 
 import module.labeler.labeler as label_indicator
 
 '''
 다이얼로그
-1. 적삼병 레이블 파라미터 설정 다이얼로그
+n_gap 레이블 파라미터 설정 다이얼로그
 '''
 class ngap_label_Param(QDialog):
 
@@ -53,20 +50,21 @@ class ngap_label_Param(QDialog):
 
     def confirmIt(self):
         # 1. 기존 csv 파일에 지표 컬럼 추가
-        df = pd.read_csv(self.path, index_col='Date')
-        gathering_info = {
-                            'df': df,
-                            'num': int(self.num_edit.text()) / 100
-                         }
+        if self.num_edit.text() == '':
+            QMessageBox.information(self, "메시지", "필요 파라미터가 입력되지 않았습니다.", QMessageBox.Yes)
+        else:
+            df = pd.read_csv(self.path, index_col='Date')
+            gathering_info = {
+                                'df': df,
+                                'num': int(self.num_edit.text()) / 100
+                            }
 
-        label_indicator.add_n_gap(gathering_info['df'], gathering_info['num'])
-        gathering_info['df'].to_csv(self.path, index_label='Date')
+            label_indicator.add_n_gap(gathering_info['df'], gathering_info['num'])
+            gathering_info['df'].to_csv(self.path, index_label='Date')
 
-        msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
-        if msg == QMessageBox.Yes:
-            ngap_label_Param.close(self)
-        # 2. 그래프 생성
-        # 3. 지표 리스트에 지표 목록 생성
+            msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
+            if msg == QMessageBox.Yes:
+                self.close()
 
     # 화면 중앙 배치
     def center(self):
@@ -76,7 +74,7 @@ class ngap_label_Param(QDialog):
         self.move(qr.topLeft())
 
     def closeIt(self):
-        ngap_label_Param.close(self)
+        self.close()
 
     def showModal(self):
         return super().exec_()

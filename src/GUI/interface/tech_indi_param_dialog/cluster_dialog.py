@@ -1,15 +1,12 @@
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-import PySide2
-import os
-import sys
 import pandas as pd
 
 import module.indicator.indicator as indicator
 
 '''
 다이얼로그
-1. atr 파라미터 설정 다이얼로그
+1. 클러스터 파라미터 설정 다이얼로그
 '''
 class cluster_Param(QDialog):
     def __init__(self, title, path, parent):
@@ -73,22 +70,26 @@ class cluster_Param(QDialog):
         self.setLayout(layout)
 
     def confirmIt(self):
-        # 1. 기존 csv 파일에 지표 컬럼 추가
-        df = pd.read_csv(self.path, index_col='Date')
-        gathering_info = {'df': df,
-                          'n_clusters': int(self.n_clusters_edit.text()),
-                          'target': str(self.target_option.currentData()),
-                          'period': str(self.period_edit.text()),
-                          'slide_size': str(self.slide_size_edit.text())
-                         }
+        # 기존 csv 파일에 지표 컬럼 추가
+        if self.n_clusters_edit.text() == '' or self.period_edit.text() == '' or self.slide_size_edit.text() == '':
+            QMessageBox.information(self, "메시지", "필요 파라미터가 입력되지 않았습니다.", QMessageBox.Yes)
+        else:
+            df = pd.read_csv(self.path, index_col='Date')
+            gathering_info = {
+                                'df': df,
+                                'n_clusters': int(self.n_clusters_edit.text()),
+                                'target': str(self.target_option.currentData()),
+                                'period': str(self.period_edit.text()),
+                                'slide_size': str(self.slide_size_edit.text())
+                             }
 
-        indicator.add_clustering(gathering_info['df'], gathering_info['n_clusters'], gathering_info['target'],
-                                gathering_info['period'], gathering_info['slide_size'])
-        gathering_info['df'].to_csv(self.path, index_label='Date')
+            indicator.add_clustering(gathering_info['df'], gathering_info['n_clusters'], gathering_info['target'],
+                                    gathering_info['period'], gathering_info['slide_size'])
+            gathering_info['df'].to_csv(self.path, index_label='Date')
 
-        msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
-        if msg == QMessageBox.Yes:
-            cluster_Param.close(self)
+            msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
+            if msg == QMessageBox.Yes:
+                self.close()
 
     # 화면 중앙 배치
     def center(self):
@@ -98,7 +99,7 @@ class cluster_Param(QDialog):
         self.move(qr.topLeft())
 
     def closeIt(self):
-        cluster_Param.close(self)
+        self.close()
 
     def showModal(self):
         return super().exec_()

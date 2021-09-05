@@ -1,4 +1,3 @@
-from json import encoder
 import json
 import PySide2
 from PySide2.QtWidgets import *
@@ -11,7 +10,6 @@ import pandas as pd
 import pathlib
 import FinanceDataReader as fdr
 
-from GUI.interface import directory_tree
 from module.handling_file import get_refined_path
 from module.apply.apply import Apply
 from GUI.interface import stock_filtering_dialog
@@ -31,9 +29,6 @@ class filtering(QMainWindow):
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-
-        # 하단 상태바
-        # self.statusBar().showMessage('종목찾기')
 
         # 메인 창 전체 레이아웃 위젯 변수 선언 및 중앙 배치
         widget = QWidget(self)
@@ -78,7 +73,7 @@ class filtering_editor(QWidget):
 
         # 종목 이름 검색
         stock_hlay = QHBoxLayout()
-        self.stock_name = QLabel('종목이름')
+        self.stock_name = QLabel('종목코드')
 
         self.stock_name_edit = QLineEdit()
         self.stock_name_edit.textChanged.connect(self.update_display)
@@ -88,12 +83,8 @@ class filtering_editor(QWidget):
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)
         self.stock_name_edit.setCompleter(self.completer)
 
-        # 종목 추가 버튼
-        # self.stock_add_btn = QPushButton('추가')
-
         stock_hlay.addWidget(self.stock_name)
         stock_hlay.addWidget(self.stock_name_edit)
-        # stock_hlay.addWidget(self.stock_add_btn)
 
         # 전체선택 체크
         self.stock_check_all = QCheckBox('전체선택')
@@ -157,6 +148,7 @@ class filtering_editor(QWidget):
         self.typeGroupBox = QGroupBox('봉 타입')
         self.intervalLayout = QHBoxLayout()
         self.dailyRadio = QRadioButton('일봉')
+        self.dailyRadio.setChecked(True)
         self.weeklyRadio = QRadioButton('주봉')
         self.intervalLayout.addWidget(self.dailyRadio)
         self.intervalLayout.addWidget(self.weeklyRadio)

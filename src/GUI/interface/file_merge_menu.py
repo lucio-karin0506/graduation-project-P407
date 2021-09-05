@@ -1,8 +1,6 @@
-import platform
 import PySide2
 import sys
 import os
-import copy
 import pandas as pd
 import json
 import pathlib
@@ -11,13 +9,9 @@ from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 from PySide2.QtGui import *
-from pandas.core.indexes import base
-from pandas.core.reshape.merge import merge
 
-from GUI.interface import directory_tree
 from GUI.interface import file_columns_dialog
 from module.handling_file import get_refined_path
-from module.apply.apply import Apply
 
 '''
 종목 차트 화면
@@ -34,9 +28,6 @@ class file_merge(QMainWindow):
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-
-        # 하단 상태바
-        # self.statusBar().showMessage('파일병합')
 
         # 메인 창 전체 레이아웃 위젯 변수 선언 및 중앙 배치
         widget = QWidget(self)
@@ -84,7 +75,7 @@ class file_merge_editor(QWidget):
         self.outFile_get_file_btn = QPushButton('파일불러오기')
         self.outFile_get_file_btn.clicked.connect(self.get_outFile)
 
-        self.outFile_col_btn = QPushButton('컬럼 표시')
+        self.outFile_col_btn = QPushButton('컬럼표시')
         self.outFile_col_btn.clicked.connect(self.display_outFile_column)
 
         file_edit_lay.addWidget(self.inFile_label)
@@ -110,7 +101,6 @@ class file_merge_editor(QWidget):
         self.inFile_col_table = QTableWidget()
         self.inFile_col_table.resize(290, 290)
         self.inFile_col_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # self.inFile_col_table.DoubleClicked.connect(self.get_indf_param)
 
         in_join_col_lay = QHBoxLayout()
         self.inFile_join_col_label = QLabel('조인컬럼')
@@ -129,7 +119,6 @@ class file_merge_editor(QWidget):
         self.outFile_col_table = QTableWidget()
         self.outFile_col_table.resize(290, 290)
         self.outFile_col_table.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        # self.outFile_col_table.DoubleClicked.connect(self.get_outdf_param)
 
         out_join_col_lay = QHBoxLayout()
         self.outFile_join_col_label = QLabel('조인컬럼')
@@ -171,6 +160,7 @@ class file_merge_editor(QWidget):
         null_data_layout = QVBoxLayout()
 
         self.null_radio = QRadioButton('Null')
+        self.null_radio.setChecked(True)
         self.avg_radio = QRadioButton('평균값')
         self.forward_radio = QRadioButton('forwardfill')
         self.backward_radio = QRadioButton('backwardfill')
@@ -239,7 +229,6 @@ class file_merge_editor(QWidget):
         self.fileDir = e.mimeData().text().split('/')[-2] # 파일 디렉토리 ex) labelFile, orderFile,...
         self.fileName = e.mimeData().text().split('/')[-1] # 삼전_d.csv
         self.fileType = self.fileName.split('.')[-1]  # csv, json
-        # print(self.fileDir)
 
         if (self.fileDir == 'applyFile' or self.fileDir == 'AssetmonthFile' or self.fileDir == 'AssetweekFile' 
         or self.fileDir == 'AssetyearFile' or self.fileDir == 'hitTestFile' or self.fileDir == 'labelFile' 
@@ -258,7 +247,7 @@ class file_merge_editor(QWidget):
 
     # 사용자가 입력한 내부파일에 대하여 컬럼 리스트 보여줌
     def display_inFile_column(self):
-        fileDir = self.inFile_edit.text().split('/')[-2] # 파일 디렉토리 ex) labelFile, orderFile,...
+        fileDir = self.inFile_edit.text()
         self.inFileName = self.inFile_edit.text().split('/')[-1] # 삼전_d.csv
 
         # 다이얼로그 종료 시 저장할 때 필요한 이름 정보 전달에 사용
@@ -266,11 +255,10 @@ class file_merge_editor(QWidget):
         fileType = self.inFile_edit.text().split('.')[-1] # csv, json
 
         if fileType == 'csv':
-            df = pd.read_csv(self.root_path + '/' + fileDir + '/' + self.inFileName, index_col=0)
+            df = pd.read_csv(fileDir, index_col=0)
             df.reset_index(inplace=True)
-
         elif fileType == 'json':
-            file = pathlib.Path(self.root_path + '/' + fileDir + '/' + self.inFileName)
+            file = pathlib.Path(fileDir)
             text = file.read_text(encoding='utf-8')
             js = json.loads(text)
             df = pd.DataFrame(js)
@@ -280,8 +268,6 @@ class file_merge_editor(QWidget):
         # 표의 크기를 지정
         self.inFile_col_table.setColumnCount(len(df.columns))
         self.inFile_col_table.setRowCount(len(df.index))
-
-        # print(df.columns)
 
         # 열 제목 지정
         self.inFile_col_table.setHorizontalHeaderLabels(df.columns)
@@ -309,6 +295,7 @@ class file_merge_editor(QWidget):
 
     # 사용자가 입력한 외부파일에 대하여 컬럼 리스트 보여줌
     def display_outFile_column(self):
+        fileDir = self.outFile_edit.text()
         fileType = self.outFile_edit.text().split('.')[-1] # csv, json
         self.outFileName = self.outFile_edit.text().split('/')[-1]
 
@@ -316,11 +303,11 @@ class file_merge_editor(QWidget):
         self.outFile = self.outFileName.split('.')[0]
 
         if fileType == 'csv':
-            df = pd.read_csv(self.outFile_edit.text(), index_col=0)
+            df = pd.read_csv(fileDir, index_col=0)
             df.reset_index(inplace=True)
 
         elif fileType == 'json':
-            file = pathlib.Path(self.outFile_edit.text())
+            file = pathlib.Path(fileDir)
             text = file.read_text(encoding='utf-8')
             js = json.loads(text)
             df = pd.DataFrame(js)
@@ -330,8 +317,6 @@ class file_merge_editor(QWidget):
         # 표의 크기를 지정
         self.outFile_col_table.setColumnCount(len(df.columns))
         self.outFile_col_table.setRowCount(len(df.index))
-
-        # print(df.columns)
 
         # 열 제목 지정
         self.outFile_col_table.setHorizontalHeaderLabels(df.columns)
@@ -378,7 +363,7 @@ class file_merge_editor(QWidget):
         else:
             QMessageBox.information(self, "메시지", "두 컬럼의 데이터 종류가 다릅니다. 다시 입력해주세요.", QMessageBox.Yes)
             self.inFile_join_col_edit.setText('')
-            self.outFile_join_col_edit.setText('')            
+            self.outFile_join_col_edit.setText('')       
 
         # 공백 데이터 옵션 반영
         if self.null_radio.isChecked():

@@ -3,14 +3,9 @@ from PySide2.QtWebEngineWidgets import QWebEngineView
 from PySide2.QtCore import QUrl
 from matplotlib.pyplot import legend
 
-import pandas as pd
 import copy
 import os
-import numpy as np
-from datetime import date, datetime, timedelta
-import sys
 
-import plotly.express as px
 import plotly.offline as offline
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots

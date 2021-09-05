@@ -5,11 +5,7 @@ from PySide2.QtCore import QUrl
 import pandas as pd
 import copy
 import os
-import numpy as np
-from datetime import date, datetime, timedelta
-import sys
 
-import plotly.express as px
 import plotly.offline as offline
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
@@ -25,9 +21,6 @@ class PlotCanvas(QWebEngineView):
 
     def __init__(self):
         super().__init__()
-        # self.ax_main = go.Figure()
-        # self.ax_sub1 = []
-        # self.ax_sub2 = []
 
     def draw_graph(self, path, root_path, interval='', state='', 
                   period='', target='', 
@@ -41,11 +34,8 @@ class PlotCanvas(QWebEngineView):
                   multid=''
                   ):
 
-        # file:///C:/Users/윤세영/PycharmProjects/database20/p407_gui/stockFile/AJ네트웍스_d.csv
-
         stock_file = os.path.split(path)        
         selected_stock_name = stock_file[1].replace('.csv', '')
-        stock_folder = path.split('/')[-2]
         stock_file = path.split('/')[-1]
 
         # 일봉 파일
@@ -90,13 +80,13 @@ class PlotCanvas(QWebEngineView):
                                 )
 
         # 거래량
-        volume_chart = go.Bar(x=copy_df.index, y=copy_df['volume'],
-                                showlegend=True,
-                                name='거래량', yaxis='y2'
-                                )
+        # volume_chart = go.Bar(x=copy_df.index, y=copy_df['volume'],
+        #                         showlegend=True,
+        #                         name='거래량', yaxis='y2'
+        #                         )
     
         fig.add_trace(stock_candle, secondary_y=False)
-        fig.add_trace(volume_chart)
+        # fig.add_trace(volume_chart)
 
         # 기술적 지표
         # 이평선

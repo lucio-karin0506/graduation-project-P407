@@ -1,8 +1,5 @@
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-import PySide2
-import os
-import sys
 import pandas as pd
 
 import module.indicator.indicator as indicator
@@ -70,23 +67,25 @@ class macd_Param(QDialog):
 
     def confirmIt(self):
         # 1. 기존 csv 파일에 지표 컬럼 추가
-        df = pd.read_csv(self.path, index_col='Date')
-        gathering_info = {'df': df,
-                          'fast_period': int(self.fast_edit.text()),
-                          'slow_period': int(self.slow_edit.text()),
-                          'signal_period': int(self.signal_edit.text()),
-                          'price': str(self.price_option.currentData())
-                          }
+        if self.fast_edit.text() == '' or self.slow_edit.text() == '' or self.signal_edit.text() == '':
+            QMessageBox.information(self, "메시지", "필요 파라미터가 입력되지 않았습니다.", QMessageBox.Yes)
+        else:
+            df = pd.read_csv(self.path, index_col='Date')
+            gathering_info = {
+                                'df': df,
+                                'fast_period': int(self.fast_edit.text()),
+                                'slow_period': int(self.slow_edit.text()),
+                                'signal_period': int(self.signal_edit.text()),
+                                'price': str(self.price_option.currentData())
+                            }
 
-        indicator.add_macd(gathering_info['df'], gathering_info['fast_period'], gathering_info['slow_period'],
-                             gathering_info['signal_period'], gathering_info['price'])
-        gathering_info['df'].to_csv(self.path, index_label='Date')
+            indicator.add_macd(gathering_info['df'], gathering_info['fast_period'], gathering_info['slow_period'],
+                                gathering_info['signal_period'], gathering_info['price'])
+            gathering_info['df'].to_csv(self.path, index_label='Date')
 
-        msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
-        if msg == QMessageBox.Yes:
-            macd_Param.close(self)
-        # 2. 그래프 생성
-        # 3. 지표 리스트에 지표 목록 생성
+            msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
+            if msg == QMessageBox.Yes:
+                self.close()
 
     # 화면 중앙 배치
     def center(self):
@@ -96,7 +95,7 @@ class macd_Param(QDialog):
         self.move(qr.topLeft())
 
     def closeIt(self):
-        macd_Param.close(self)
+        self.close()
 
     def showModal(self):
         return super().exec_()

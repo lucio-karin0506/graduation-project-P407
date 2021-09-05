@@ -1,8 +1,5 @@
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-import PySide2
-import os
-import sys
 import pandas as pd
 
 import module.labeler.labeler as label_indicator
@@ -65,25 +62,26 @@ class bbands_label_Param(QDialog):
 
     def confirmIt(self):
         # 1. 기존 csv 파일에 지표 컬럼 추가
-        df = pd.read_csv(self.path, index_col='Date')
-        gathering_info = {'df': df,
-                          'period': int(self.period_edit.text()),
-                          'multid': int(self.multid_edit.text()),
-                          'target': str(self.target_option.currentData())
-                          }
-
-        if gathering_info['multid'] <= 0:
-            msg = QMessageBox.information(self, "메시지", "표준편차배수는 0보다 큰 값이어야 합니다.", QMessageBox.Yes)
+        if self.period_edit.text() == '' or self.multid_edit.text() == '':
+            QMessageBox.information(self, "메시지", "필요 파라미터가 입력되지 않았습니다.", QMessageBox.Yes)
+        elif int(self.multid_edit.text()) <= 0:
+            QMessageBox.information(self, "메시지", "표준편차배수는 0보다 큰 값이어야 합니다.", QMessageBox.Yes)
         else:
+            df = pd.read_csv(self.path, index_col='Date')
+            gathering_info = {
+                                'df': df,
+                                'period': int(self.period_edit.text()),
+                                'multid': int(self.multid_edit.text()),
+                                'target': str(self.target_option.currentData())
+                             }
+
             label_indicator.add_bbands_classify(gathering_info['df'], gathering_info['period'], gathering_info['multid'],
                                     gathering_info['target'])
             gathering_info['df'].to_csv(self.path, index_label='Date')
 
             msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
             if msg == QMessageBox.Yes:
-                bbands_label_Param.close(self)
-        # 2. 그래프 생성
-        # 3. 지표 리스트에 지표 목록 생성
+                self.close()
 
     # 화면 중앙 배치
     def center(self):
@@ -93,7 +91,7 @@ class bbands_label_Param(QDialog):
         self.move(qr.topLeft())
 
     def closeIt(self):
-        bbands_label_Param.close(self)
+        self.close()
 
     def showModal(self):
         return super().exec_()

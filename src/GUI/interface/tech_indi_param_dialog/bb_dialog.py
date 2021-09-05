@@ -1,8 +1,5 @@
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-import PySide2
-import os
-import sys
 import pandas as pd
 
 import module.indicator.indicator as indicator
@@ -69,23 +66,26 @@ class bb_Param(QDialog):
         self.setLayout(layout)
 
     def confirmIt(self):
-        # 1. 기존 csv 파일에 지표 컬럼 추가
-        df = pd.read_csv(self.path, index_col='Date')
-        gathering_info = {'df': df,
-                          'period': int(self.period_edit.text()),
-                          'nbdevup': int(self.up_edit.text()),
-                          'nbdevdn': int(self.down_edit.text()),
-                          'price': str(self.price_option.currentData())
-                         }
+        # 기존 csv 파일에 지표 컬럼 추가
+        if self.period_edit.text() == '' or self.up_edit.text() == '' or self.down_edit.text() == '':
+            QMessageBox.information(self, "메시지", "필요 파라미터가 입력되지 않았습니다.", QMessageBox.Yes)
+        else:
+            df = pd.read_csv(self.path, index_col='Date')
+            gathering_info = {
+                                'df': df,
+                                'period': int(self.period_edit.text()),
+                                'nbdevup': int(self.up_edit.text()),
+                                'nbdevdn': int(self.down_edit.text()),
+                                'price': str(self.price_option.currentData())
+                             }
 
-        indicator.add_bbands(gathering_info['df'], gathering_info['period'], gathering_info['nbdevup'],
-                         gathering_info['nbdevdn'], gathering_info['price'])
-        gathering_info['df'].to_csv(self.path, index_label='Date')
+            indicator.add_bbands(gathering_info['df'], gathering_info['period'], gathering_info['nbdevup'],
+                            gathering_info['nbdevdn'], gathering_info['price'])
+            gathering_info['df'].to_csv(self.path, index_label='Date')
 
-        msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
-
-        if msg == QMessageBox.Yes:
-            bb_Param.close(self)
+            msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
+            if msg == QMessageBox.Yes:
+                self.close()
 
     # 화면 중앙 배치
     def center(self):
@@ -95,7 +95,7 @@ class bb_Param(QDialog):
         self.move(qr.topLeft())
 
     def closeIt(self):
-        bb_Param.close(self)
+        self.close()
 
     def showModal(self):
         return super().exec_()

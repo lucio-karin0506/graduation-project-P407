@@ -3,7 +3,6 @@ from PySide2.QtWidgets import *
 import PySide2
 import os
 import sys
-import pandas as pd
 
 '''
 다이얼로그

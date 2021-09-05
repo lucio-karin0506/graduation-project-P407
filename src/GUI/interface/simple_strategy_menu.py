@@ -3,7 +3,6 @@ from PySide2 import QtWidgets
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 from PySide2.QtGui import *
-from PySide2 import QtGui
 
 import os
 import sys
@@ -11,7 +10,7 @@ import pandas as pd
 import json
 import FinanceDataReader as fdr
 
-from GUI.interface import directory_tree, indicator_tree, simple_strategy_chart_dialog
+from GUI.interface import simple_strategy_chart_dialog
 from module.order_creator.order_creator import OrderCreator
 
 '''
@@ -32,9 +31,6 @@ class simple_strategy(QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        # 하단 상태바
-        # self.statusBar().showMessage('단순전략')
-
         # 메인 창 전체 레이아웃 위젯 변수 선언 및 중앙 배치
         widget = QWidget(self)
         self.setCentralWidget(widget)
@@ -53,6 +49,7 @@ class order_editor(QWidget):
     def __init__(self, root_path, *args, **kwargs):
         QWidget.__init__(self, *args, **kwargs)
         self.root_path = root_path
+
         #전체 레이아웃
         layout = QHBoxLayout()
 
@@ -267,6 +264,7 @@ class order_editor(QWidget):
         self.typeGroupBox = QGroupBox('봉 타입')
         self.intervalLayout = QHBoxLayout()
         self.dailyRadio = QRadioButton('일봉')
+        self.dailyRadio.setChecked(True)
         self.weeklyRadio = QRadioButton('주봉')
         self.intervalLayout.addWidget(self.dailyRadio)
         self.intervalLayout.addWidget(self.weeklyRadio)
@@ -344,14 +342,6 @@ class order_editor(QWidget):
         layout.setStretchFactor(rightLayout, 1)
         self.setLayout(layout)
 
-        self.path = ''
-        self.stock_name = ''
-        self.stock_code = ''
-        self.startDate = ''
-        self.endDate = ''
-        self.stock_interval = ''
-        self.network = ''
-
     # 파일 불러오기 버튼 이벤트
     def get_stock_file(self):
         basePath = QFileDialog.getOpenFileName(self, caption='종목파일', dir=self.root_path)
@@ -365,13 +355,11 @@ class order_editor(QWidget):
     '''
     def display_local_indi(self):
         file_path = self.stock_use_local_edit.text()
-        file_name = file_path.split('/')[-1]
 
         # stock csv 파일에서 추가된 지표를 읽어와 지표 리스트 추가
         df = pd.read_csv(file_path)
         label_df = df.drop(columns=['Date', 'open', 'high', 'low', 'close', 'volume', 'change'])
         label_col_list = label_df.columns.tolist()
-        # print(label_col_list)
 
         # 모듈에서 컬럼 이름 정제하는 부분 추가
         modified_label_col_list = self.modify_name(label_col_list)
@@ -519,11 +507,12 @@ class order_editor(QWidget):
         4. stock_interval
     '''
     def get_strategy_info(self):
-        if self.local_Mode.isChecked():            
+        if self.local_Mode.isChecked():           
             if self.stock_use_local_edit.text().find('file:') == -1:
                 file_path = self.stock_use_local_edit.text()
             else:
-                file_path = self.stock_use_local_edit.text().split('///')[1]  
+                file_path = self.stock_use_local_edit.text().split('///')[1]
+
             file_name = file_path.split('/')[-1]
 
             self.stock_name = file_name.replace('.csv', '')[:-2]
@@ -542,7 +531,8 @@ class order_editor(QWidget):
             for i in self.indi_local_info:
                 self.indi_local_info_list.append(i)
 
-            self.network = False            
+            self.network = False   
+         
             self.make_json(file_path)
 
         elif self.net_Mode.isChecked():
@@ -568,6 +558,7 @@ class order_editor(QWidget):
                 self.indi_info_list.append(i)
 
             self.network = True
+
             self.make_json()
 
     '''
@@ -576,7 +567,8 @@ class order_editor(QWidget):
     '''
     def make_json(self, file_path=False):
         if self.local_Mode.isChecked():
-            strategy_dic = {'stockcode': str(self.stock_code),
+            strategy_dic = {
+                            'stockcode': str(self.stock_code),
                             'startdate': str(self.startDate),
                             'enddate': str(self.endDate),
                             'interval': str(self.stock_interval),
@@ -585,13 +577,14 @@ class order_editor(QWidget):
                            }
 
         elif self.net_Mode.isChecked():
-            strategy_dic = {'stockcode': str(self.stock_code),
+            strategy_dic = {
+                            'stockcode': str(self.stock_code),
                             'startdate': str(self.startDate),
                             'enddate': str(self.endDate),
                             'interval': str(self.stock_interval),
                             'indicator': self.indi_info_list,
                             'strategy': str(self.strategy_net_edit_text.toPlainText())
-                            }
+                           }
 
         strategy_list_dic = [strategy_dic]
 
@@ -613,9 +606,11 @@ class order_editor(QWidget):
             order_file_name = f'{self.stock_name}_w_Order.json'
 
         # order creator 모듈에 json 파일 전달
-        order_creator = OrderCreator(network=self.network,
-                                    mix=False,
-                                    root_path=self.root_path)
+        order_creator = OrderCreator(
+                                        network=self.network,
+                                        mix=False,
+                                        root_path=self.root_path
+                                    )
 
         if self.network == True:            
             order_creator.read_file(strategy_file, full_path=True)
@@ -654,8 +649,6 @@ class order_editor(QWidget):
         file_path = e.mimeData().text()
         file_type = file_path.split('.')[-1]
 
-        # print(file_type)
-
         if file_type == 'csv':
             self.stock_use_local_edit.setText(e.mimeData().text())
         else:
@@ -680,7 +673,6 @@ class order_editor(QWidget):
         self.stock_use_local_edit.hide()
         self.indi_edit_label.show()
         self.indi_edit_text.show()
-
         self.typeGroupBox.show()
         self.stock_use_net_edit.show()
         self.strategy_net_edit_text.show()
@@ -695,7 +687,6 @@ class order_editor(QWidget):
             self.stock_indi_btn.show()
             self.indi_local_edit_label.show()
             self.indi_local_edit_text.show()
-
             self.stock_use_local_edit.show()
             self.strategy_edit_text.show()
 

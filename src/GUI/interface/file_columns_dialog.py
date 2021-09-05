@@ -3,10 +3,6 @@ from PySide2.QtWidgets import *
 import PySide2
 import os
 import sys
-from numpy import inf
-import pandas as pd
-
-from GUI.interface import file_merge_menu
 
 '''
 다이얼로그
@@ -40,14 +36,11 @@ class file_columns(QDialog):
         self.column_list.setColumnCount(len(df.columns))
         self.column_list.setRowCount(len(df.index))
 
-        # print(df.columns)
-
         # 열 제목 지정
         self.column_list.setHorizontalHeaderLabels(df.columns)
 
         # 통계자료표 내용
         self.df = df
-        # self.df.reset_index()
 
         rows = len(self.df.index)
         columns = len(self.df.columns)

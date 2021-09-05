@@ -8,12 +8,11 @@ from PySide2.QtWidgets import *
 class DirectoryTreeView(QTreeView):
     """
     Treeview file system UI
-    default path: 실행시 current directory
+    default path: 프로젝트 메뉴에서 사용자가 설정한 폴더 경로
     """
     def __init__(self):
         QTreeView.__init__(self)        
         self.model = QFileSystemModel()
-        # self.model.setRootPath('')
 
         self.setModel(self.model)
         self.setRootIndex(self.model.index(''))
@@ -75,12 +74,6 @@ class DirectoryTreeView(QTreeView):
         self.model.setRootPath(path)
         self.setRootIndex(self.model.index(path))
 
-    '''
-    변경된 경로를 주는 함수
-    def get_path:
-        return  
-
-    '''
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + "\\..\\"))
 dirname = os.path.dirname(PySide2.__file__)

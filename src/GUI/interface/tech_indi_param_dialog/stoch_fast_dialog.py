@@ -1,8 +1,5 @@
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-import PySide2
-import os
-import sys
 import pandas as pd
 
 import module.indicator.indicator as indicator
@@ -81,24 +78,26 @@ class stoch_fast_Param(QDialog):
 
     def confirmIt(self):
         # 1. 기존 csv 파일에 지표 컬럼 추가
-        df = pd.read_csv(self.path, index_col='Date')
-        gathering_info = {'df': df,
-                          'fastk_period': int(self.fastk_edit.text()),
-                          'fastd_period': int(self.fastd_edit.text()),
-                          'price1': str(self.price1_option.currentData()),
-                          'price2': str(self.price2_option.currentData()),
-                          'price3': str(self.price3_option.currentData())
-                          }
+        if self.fastk_edit.text() == '' or self.fastd_edit.text() == '':
+            QMessageBox.information(self, "메시지", "필요 파라미터가 입력되지 않았습니다.", QMessageBox.Yes)
+        else:
+            df = pd.read_csv(self.path, index_col='Date')
+            gathering_info = {
+                                'df': df,
+                                'fastk_period': int(self.fastk_edit.text()),
+                                'fastd_period': int(self.fastd_edit.text()),
+                                'price1': str(self.price1_option.currentData()),
+                                'price2': str(self.price2_option.currentData()),
+                                'price3': str(self.price3_option.currentData())
+                             }
 
-        indicator.add_stochf(gathering_info['df'], gathering_info['fastk_period'], gathering_info['fastd_period'],
-                             gathering_info['price1'], gathering_info['price2'], gathering_info['price3'])
-        gathering_info['df'].to_csv(self.path, index_label='Date')
+            indicator.add_stochf(gathering_info['df'], gathering_info['fastk_period'], gathering_info['fastd_period'],
+                                gathering_info['price1'], gathering_info['price2'], gathering_info['price3'])
+            gathering_info['df'].to_csv(self.path, index_label='Date')
 
-        msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
-        if msg == QMessageBox.Yes:
-            stoch_fast_Param.close(self)
-        # 2. 그래프 생성
-        # 3. 지표 리스트에 지표 목록 생성
+            msg = QMessageBox.information(self, "메시지", "파라미터 설정이 완료되었습니다!", QMessageBox.Yes)
+            if msg == QMessageBox.Yes:
+                self.close()
 
     # 화면 중앙 배치
     def center(self):
@@ -108,7 +107,7 @@ class stoch_fast_Param(QDialog):
         self.move(qr.topLeft())
 
     def closeIt(self):
-        stoch_fast_Param.close(self)
+        self.close()
 
     def showModal(self):
         return super().exec_()

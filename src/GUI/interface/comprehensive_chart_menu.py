@@ -9,7 +9,7 @@ import pandas as pd
 import json
 import pathlib
 
-from GUI.interface import directory_tree, comprehensive_chart_graph_canvas
+from GUI.interface import comprehensive_chart_graph_canvas
 from module.handling_file import get_refined_path
 
 '''
@@ -31,9 +31,6 @@ class comPreChart(QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        # 하단 상태바
-        # self.statusBar().showMessage('종합차트')
-
         # 메인 창 전체 레이아웃 위젯 변수 선언 및 중앙 배치
         widget = QWidget(self)
         self.setCentralWidget(widget)
@@ -51,7 +48,9 @@ class comPreChart(QMainWindow):
 class comPreChart_editor(QWidget):
     def __init__(self, root_path, *args, **kwargs):
         QWidget.__init__(self, *args, **kwargs)
+
         self.root_path = root_path
+
         #전체 레이아웃
         layout = QHBoxLayout()
 
@@ -83,6 +82,7 @@ class comPreChart_editor(QWidget):
         # 내부파일 그래프 타입 라디오 옵션
         infile_graph_type_lay = QHBoxLayout()
         self.infile_marker_radio = QRadioButton('산점도')
+        self.infile_marker_radio.setChecked(True)
         self.infile_bar_radio = QRadioButton('막대')
         self.infile_plot_radio = QRadioButton('꺾은선')
         self.infile_plot_marker_radio = QRadioButton('꺾은선+점')
@@ -157,6 +157,7 @@ class comPreChart_editor(QWidget):
         # 외부파일 그래프 타입 라디오 옵션
         outfile_graph_type_lay = QHBoxLayout()
         self.outfile_marker_radio = QRadioButton('산점도')
+        self.outfile_marker_radio.setChecked(True)
         self.outfile_bar_radio = QRadioButton('막대')
         self.outfile_plot_radio = QRadioButton('꺾은선')
         self.outfile_plot_marker_radio = QRadioButton('꺾은선+점')
@@ -331,18 +332,7 @@ class comPreChart_editor(QWidget):
         self.outerColList.addItems(df_columns)
 
     '''
-        1. 합성 및 병렬 차트 그리기 위한 graph_canvas로의 정보 전달
-            - 내부 파일
-                stockFile (candle), orderFile & tradingLogFile(scatter)
-            - 외부 파일
-                우선 꺾은선 그래프로 표현
-                
-        *** 우선 p407 내부에서 생성한 파일들만 합성한 것을 생각
-        *** 완전 외부 데이터는 컬럼 데이터 타입이 무엇이냐에 따라서 판단하여 향후 구현 ㄱㄱ
-        *** 내부 + 내부 파일 케이스만 생각
-
-        3/24 수정양식
-        ===> 그래프 타입 옵션 ui 추가, 데이터 형식 관계없이 그래프 옵션 따른 그래프 개형 제공 ㄱㄱ
+     합성 및 병렬 차트 그리기 위한 graph_canvas로의 정보 전달
     '''
     # 종합차트 그래프 그리기 위한 정보 전달
     def give_graph_info(self):
@@ -380,17 +370,21 @@ class comPreChart_editor(QWidget):
             
             in_y_grid = self.y1_edit.text()
             out_y_grid = self.y2_edit.text()
-            self.canvas.draw_merge_graph(
-                                        root_path=self.root_path,
-                                        indf=self.infile_df, 
-                                        outdf=self.outfile_df, 
-                                        infile_x=in_x_grid, 
-                                        infile_y=in_y_grid, 
-                                        outfile_x=out_x_grid, 
-                                        outfile_y=out_y_grid, 
-                                        in_state=in_state, 
-                                        out_state=out_state
-                                        )
+
+            if self.innerFileEdit.text() == '':
+                QMessageBox.information(self, "메시지", "완전한 입력이 아닙니다. 다시 입력해주세요.", QMessageBox.Yes)
+            else:
+                self.canvas.draw_merge_graph(
+                                            root_path=self.root_path,
+                                            indf=self.infile_df, 
+                                            outdf=self.outfile_df, 
+                                            infile_x=in_x_grid, 
+                                            infile_y=in_y_grid, 
+                                            outfile_x=out_x_grid, 
+                                            outfile_y=out_y_grid, 
+                                            in_state=in_state, 
+                                            out_state=out_state
+                                            )
 
         # 병렬
         elif self.parallelRadio.isChecked():
@@ -419,11 +413,11 @@ class comPreChart_editor(QWidget):
         self.x1_edit.hide()
         self.x2_label.hide()
         self.x2_edit.hide()
-        # 합성 모드 내부/외부 파일 y축
         self.y1_label.hide()
         self.y1_edit.hide()
         self.y2_label.hide()
         self.y2_edit.hide()
+        
         self.infile_x_label.show()
         self.infile_x_edit.show()
         self.infile_y_label.show()
@@ -438,14 +432,11 @@ class comPreChart_editor(QWidget):
             self.x1_edit.show()
             self.x2_label.show()
             self.x2_edit.show()
-
-            # 합성 모드 내부/외부 파일 y축
             self.y1_label.show()
             self.y1_edit.show()
             self.y2_label.show()
             self.y2_edit.show()
 
-            # 내부, 외부 파일 조인 기준컬럼
             self.infile_x_label.hide()
             self.infile_x_edit.hide()
             self.infile_y_label.hide()

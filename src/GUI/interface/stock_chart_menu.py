@@ -2,15 +2,12 @@ import platform
 import PySide2
 import sys
 import os
-import copy
-import pandas as pd
 
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
-from PySide2 import QtCore
 
 from module.handling_file import get_refined_path
-from GUI.interface import stock_add_dialog, directory_tree, indicator_tree, stock_chart_graph_canvas
+from GUI.interface import stock_add_dialog, indicator_tree, stock_chart_graph_canvas
 
 from GUI.interface.tech_indi_param_dialog import (ma_dialog, ema_dialog, cmo_dialog,
                                                 rsi_dialog, bb_dialog, macd_dialog, stoch_fast_dialog,
@@ -25,7 +22,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 '''
-종목 차트 화면
+    종목 차트 화면
 '''
 class stock_chart(QMainWindow):
     def __init__(self, root_path):
@@ -39,9 +36,6 @@ class stock_chart(QMainWindow):
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-
-        # 하단 상태바
-        # self.statusBar().showMessage('종목차트')
 
         # 메인 창 전체 레이아웃 위젯 변수 선언 및 중앙 배치
         widget = QWidget(self)
@@ -76,23 +70,16 @@ class stock_chart_editor(QWidget):
         self.indi_label = QLabel('지표')
         self.indi_tree = indicator_tree.IndicatorTreeView()
 
-        # 그래프 초기화 버튼
-        # self.init_graph_btn = QPushButton('그래프 초기화')
-        # self.init_graph_btn.clicked.connect(self.init_graph)
-
         leftLayout.addWidget(self.stock_button)
         leftLayout.addWidget(self.stock_select_button)
         leftLayout.addWidget(self.indi_label)
         leftLayout.addWidget(self.indi_tree)
-        # leftLayout.addWidget(self.init_graph_btn)
 
         # Center Layout (차트 캔버스)
         centerLayout = QVBoxLayout()
 
         self.setAcceptDrops(True)
-        # self.canvas = graph_canvas.PlotCanvas(self, width=10, height=8)
         self.canvas = stock_chart_graph_canvas.PlotCanvas()
-        # self.toolbar = graph_canvas.NavigationToolbar(self.canvas, self)
 
         self.cb_option = QComboBox(self)
         self.cb_option.addItem('일봉', 'd')
@@ -103,7 +90,6 @@ class stock_chart_editor(QWidget):
         mini_vlay = QVBoxLayout()
         mini_hlay = QHBoxLayout()
 
-        # mini_hlay.addWidget(self.toolbar)
         mini_hlay.addWidget(self.cb_option)
         
         mini_vlay.addLayout(mini_hlay)
@@ -178,17 +164,16 @@ class stock_chart_editor(QWidget):
         # 지표 리스트 박스에 파일 경로 정보 전달
         self.indi_tree.get_path(self.stock_path)
 
+    # 차트 일, 주봉 변환
     def change_subplot(self):
         # 일봉 콤보 아이템 선택 시 일봉 차트
         if self.cb_option.currentData() == 'd':
-            # self.canvas.update_subplot()
             self.canvas.draw_graph(path=self.stock_path,
                                 root_path=self.root_path,
                                 interval='d')
 
         # 주봉 콤보 아이템 선택 시 주봉 차트
         elif self.cb_option.currentData() == 'w':
-            # self.canvas.update_subplot()
             self.canvas.draw_graph(path=self.stock_path,
                                 root_path=self.root_path,
                                 interval='w')

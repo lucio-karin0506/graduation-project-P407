@@ -3,11 +3,10 @@ from PySide2.QtWidgets import *
 import PySide2
 import os
 import sys
-import pandas as pd
 
 '''
 다이얼로그
-1. 기본 백테스팅 결과물 vs 레이블 백테스팅 결과물 비교 통계 결과
+종목 찾기 메뉴 통계 결과
 '''
 class filter_result(QDialog):
     def __init__(self, df, parent):

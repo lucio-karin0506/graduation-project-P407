@@ -9,7 +9,7 @@ import pathlib
 import json
 import pandas as pd
 
-from GUI.interface import basic_backtest_graph_canvas, directory_tree
+from GUI.interface import basic_backtest_graph_canvas
 from module.simulator.simulator import Simulator
 from module.calculator.calculator import Calculator
 
@@ -31,9 +31,6 @@ class basic_backtest(QMainWindow):
 
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
-
-        # 하단 상태바
-        # self.statusBar().showMessage('기본백테스트')
 
         # 메인 창 전체 레이아웃 위젯 변수 선언 및 중앙 배치
         widget = QWidget(self)
@@ -69,9 +66,6 @@ class basic_backtest_editor(QWidget):
 
         # Left Layout(directory tree, 주문파일 & 초기자본금 입력, 실행버튼)
         leftLayout = QHBoxLayout()
-
-        # 종목 폴더
-        vlay1 = QVBoxLayout()
 
         # (주문파일, 파일입력, 초기자본금, 옵션 그룹박스, 기간 설정 그룹박스, 실행버튼, 손익률 통계자료표)
         vlay2 = QVBoxLayout()
@@ -133,6 +127,7 @@ class basic_backtest_editor(QWidget):
         period_option_lay = QHBoxLayout()
 
         self.week_radio = QRadioButton('주별')
+        self.week_radio.setChecked(True)
         self.month_radio = QRadioButton('월별')
         self.year_radio = QRadioButton('연별')
 
@@ -221,7 +216,6 @@ class basic_backtest_editor(QWidget):
         *** treeview item 선택 시 파일정보 받는 것 나중에 생각 일단은 drag&drop 으로 처리
     '''
     def get_order_info(self):
-        #file: // / C: / Users / 윤세영 / PycharmProjects / database20 / p407_gui / orderFile / SK하이닉스_d_Order.json
         # simulator infos
         self.file_name = self.file_path.split('/')[-1]
         self.cash = self.init_money_edit.text()
@@ -343,7 +337,7 @@ class basic_backtest_editor(QWidget):
             if self.cb_option.currentData() == 'period_profit':
                 self.canvas.draw_backtest_graph(self.root_path, self.df, self.trading_df, state = 'period_profit')
             elif self.cb_option.currentData() == 'asset':
-                self.canvas.draw_backtest_graph(self.df, self.trading_df)
+                self.canvas.draw_backtest_graph(self.root_path, self.df, self.trading_df)
 
         if self.month_radio.isChecked():
             self.df = cal_instance._mast_log

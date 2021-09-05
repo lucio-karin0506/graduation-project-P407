@@ -5,11 +5,7 @@ from PySide2.QtCore import QUrl
 import pandas as pd
 import copy
 import os
-import numpy as np
-from datetime import date, datetime, timedelta
-import sys
 
-import plotly.express as px
 import plotly.offline as offline
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
@@ -68,8 +64,6 @@ class SimpleStrategyGraph(QDialog):
         merge_df = pd.merge(copy_stock_df, copy_order_df, how='left', left_on='Date', right_on='order_datetime')
         merge_df.set_index('Date', inplace=True)
 
-        # fig = make_subplots(specs=[[{"secondary_y": True}]])
-
         # stock candle chart
         stock_candle = go.Candlestick(x=merge_df.index, 
                                 open=merge_df['open'], 
@@ -88,13 +82,13 @@ class SimpleStrategyGraph(QDialog):
                           yaxis=dict(title='Price')
                           )
 
-        fig.update_xaxes(title='날짜',
+        fig.update_xaxes(title='Date',
                         type='category',
                         categoryorder='category ascending',
                         tickangle=45
                         )
 
-        fig.update_yaxes(title='가격')
+        fig.update_yaxes(title='Price')
 
         # 종가 기준 꺾은선그래프
         price_chart = go.Scatter(x=merge_df.index,

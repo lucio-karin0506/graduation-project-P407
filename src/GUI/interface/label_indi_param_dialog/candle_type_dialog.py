@@ -3,7 +3,7 @@ import module.labeler.labeler as label_indicator
 
 '''
 다이얼로그
-1. 캔들 종류 레이블 파라미터 설정 다이얼로그
+1. 캔들 타입 레이블 파라미터 설정 다이얼로그
 '''
 
 def confirmIt(path):
@@ -14,5 +14,3 @@ def confirmIt(path):
 
     label_indicator.add_candle_type(gathering_info['df'])
     gathering_info['df'].to_csv(path, index_label='Date')
-    # 2. 그래프 생성
-    # 3. 지표 리스트에 지표 목록 생성

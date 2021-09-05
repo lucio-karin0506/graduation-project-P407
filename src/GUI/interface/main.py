@@ -9,9 +9,10 @@ from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 
 from GUI.interface import (stock_chart_menu, file_merge_menu, simple_strategy_menu,
-                                basic_backtest_menu, label_backtest_menu, comprehensive_chart_menu,
-                                stock_filtering_menu, debug_log, directory_tree)
+                           basic_backtest_menu, label_backtest_menu, comprehensive_chart_menu,
+                           stock_filtering_menu, debug_log, directory_tree)
 
+# 운영체제 환경 따른 경로 설정
 if platform.system() == 'Windows':
     # Windows pyside env path set
     sys.path.append(os.path.abspath(os.path.dirname(__file__) + "\\..\\"))
@@ -25,11 +26,10 @@ elif platform.system() == 'Darwin':
     plugin_path = os.path.join(dirname, 'Qt', 'plugins', 'platforms')
     os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = plugin_path
 
-
 '''
 전체 GUI 화면
-1. 메뉴 바(종목차트, 자료정제, 거래전략(단순전략, 복합전략), 백테스트(기본, 레이블링), 종합차트, 종목필터링)
-2. 탭 호스트
+    1. 메뉴 바(종목차트, 자료정제, 거래전략(단순전략, 복합전략), 백테스트(기본, 레이블링), 종합차트, 종목필터링)
+    2. 탭 호스트
 '''
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -62,7 +62,7 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea, self.dockTree)
         self.dockTree.setWidget(self.trees_widget)
 
-        # Debug & Processing Log text output dock
+        # Debug & Processing Log text output dock widget
         self.logDock = QDockWidget("Message Box", self)
         self.logDock.setAllowedAreas(Qt.LeftDockWidgetArea |
                                      Qt.RightDockWidgetArea |
@@ -78,7 +78,9 @@ class MainWindow(QMainWindow):
         # 메인메뉴 바
         self.createMenus()
 
-    # 메인메뉴
+    '''
+        메인메뉴 셋팅 함수
+    '''
     def createMenus(self):
         mainMenu = self.menuBar()
         mainMenu.setNativeMenuBar(False)
@@ -110,7 +112,6 @@ class MainWindow(QMainWindow):
 
         # 파일병합 메뉴
         dataCleanMenu = mainMenu.addMenu('자료정제')
-        
         fileMerge_Menu = QAction('파일병합', self)
         fileMerge_Menu.setStatusTip('파일병합')
         fileMerge_Menu.triggered.connect(self.fileMerge_tab)
@@ -131,12 +132,15 @@ class MainWindow(QMainWindow):
 
         # 백테스트 메뉴
         backtestMenu = mainMenu.addMenu('백테스트')
+
         basic_backtest = QAction('&기본백테스트', self)
-        label_backtest = QAction('&레이블백테스트', self)
         basic_backtest.setStatusTip('기본백테스트')
-        label_backtest.setStatusTip('레이블백테스트')
         basic_backtest.triggered.connect(self.basic_tab)
+
+        label_backtest = QAction('&레이블백테스트', self)
+        label_backtest.setStatusTip('레이블백테스트')
         label_backtest.triggered.connect(self.label_tab)
+
         backtestMenu.addAction(basic_backtest)
         backtestMenu.addAction(label_backtest)
 
@@ -147,7 +151,7 @@ class MainWindow(QMainWindow):
         comPreChart_Menu.triggered.connect(self.comPreChart_tab)
         comPreChartMenu.addAction(comPreChart_Menu)
 
-        # 종목필터링 메뉴
+        # 종목찾기 메뉴
         filterMenu = mainMenu.addMenu('종목찾기')
         filter_Menu = QAction('&종목찾기', self)
         filter_Menu.setStatusTip('종목찾기')
@@ -157,8 +161,8 @@ class MainWindow(QMainWindow):
         # 보기 메뉴
         viewMenu = mainMenu.addMenu("&보기")
 
-        fileViewAction = QAction("&File system", self, checkable=True)
-        fileViewAction.setStatusTip("File system")
+        fileViewAction = QAction("&파일 디렉토리", self, checkable=True)
+        fileViewAction.setStatusTip("파일 디렉토리")
         fileViewAction.setChecked(True)
         fileViewAction.triggered.connect(self.toggleFileView)
         viewMenu.addAction(self.dockTree.toggleViewAction())
@@ -170,7 +174,7 @@ class MainWindow(QMainWindow):
         viewMenu.addAction(self.logDock.toggleViewAction())
 
 
-    # 파일 불러오기, 생성 함수
+    # 파일 불러오기, 생성
     def loadProject(self):
         self.root_path = QFileDialog.getExistingDirectory(self, self.tr("폴더 불러오기"), self.tr("~/Desktop/"),
                                                             QFileDialog.ShowDirsOnly
@@ -178,6 +182,7 @@ class MainWindow(QMainWindow):
 
         self.trees_widget.change_root_index(self.root_path)
 
+    # 바뀐 파일 경로 받는 함수
     def get_changed_path(self):
         return self.root_path
 
@@ -266,7 +271,6 @@ class MainWindow(QMainWindow):
     # 경로 설정 x 시 경고 창 로드
     def load_Message(self):
         QMessageBox.information(self, "메시지", "파일 경로가 지정되지 않았습니다.", QMessageBox.Yes)
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

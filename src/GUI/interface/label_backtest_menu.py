@@ -9,7 +9,7 @@ import pandas as pd
 import json
 import pathlib
 
-from GUI.interface import directory_tree, hit_ratio_dialog, label_backtest_graph_canvas
+from GUI.interface import hit_ratio_dialog, label_backtest_graph_canvas
 import module.labeler.labeler as label
 from module.handling_file import get_refined_path
 from module.hit_tester import hit_tester
@@ -32,9 +32,6 @@ class label_backtest(QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
 
-        # 하단 상태바
-        # self.statusBar().showMessage('레이블백테스트')
-
         # 메인 창 전체 레이아웃 위젯 변수 선언 및 중앙 배치
         widget = QWidget(self)
         self.setCentralWidget(widget)
@@ -53,6 +50,7 @@ class label_backtest_editor(QWidget):
     def __init__(self, root_path, *args, **kwargs):
         QWidget.__init__(self, *args, **kwargs)
         self.root_path = root_path
+
         #전체 레이아웃
         layout = QHBoxLayout()
 
@@ -166,13 +164,10 @@ class label_backtest_editor(QWidget):
 
         # 입력버튼
         self.label_exec = QPushButton('레이블 백테스팅 실행')
-        # self.label_exec.clicked.connect(self.get_hitRatio_dialog)
         self.label_exec.clicked.connect(self.merge_df)
 
         # 그래프 타입 
         self.graph_type_lay = QHBoxLayout()
-        # self.zone_check = QCheckBox('zone')
-        # self.zone_check.stateChanged.connect(self.make_hit_infos)
 
         vlay2.addLayout(hlay1)
         vlay2.addWidget(self.stock_file_button)
@@ -293,7 +288,6 @@ class label_backtest_editor(QWidget):
 
         case 1: 사용자가 기존 레이블 파일 사용할 시 
         case 2: 사용자가 신규 레이블 파일 생성 시 
-        ex) basic_order_file=> file:///C:/Users/윤세영/OneDrive - kpu.ac.kr/졸작/P407/orderFile/DB손해보험_d_Order.json
     '''
     def merge_df(self):
         if self.basic_order_file_edit.text().find('file:') == -1:
