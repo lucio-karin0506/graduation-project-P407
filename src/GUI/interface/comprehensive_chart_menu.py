@@ -48,7 +48,6 @@ class comPreChart(QMainWindow):
 class comPreChart_editor(QWidget):
     def __init__(self, root_path, *args, **kwargs):
         QWidget.__init__(self, *args, **kwargs)
-
         self.root_path = root_path
 
         #전체 레이아웃
@@ -331,60 +330,81 @@ class comPreChart_editor(QWidget):
         self.outerColList.clear()
         self.outerColList.addItems(df_columns)
 
-    '''
-     합성 및 병렬 차트 그리기 위한 graph_canvas로의 정보 전달
-    '''
+    #합성 및 병렬 차트 그리기 위한 graph_canvas로의 정보 전달
     # 종합차트 그래프 그리기 위한 정보 전달
     def give_graph_info(self):
         # 내부파일 그래프 타입 state
+        if self.innerFileEdit.text() == '':
+            QMessageBox.information(self, "메시지", "내부파일을 선택하세요", QMessageBox.Yes)
+            return
+
+        if self.outerFileEdit.text() == '':
+            QMessageBox.information(self, "메시지", "외부파일을 선택하세요", QMessageBox.Yes)
+            return
+
         in_state = ''
         if self.infile_marker_radio.isChecked():
             in_state = 'marker'
-        if self.infile_bar_radio.isChecked():
+        elif self.infile_bar_radio.isChecked():
             in_state = 'bar'
-        if self.infile_plot_radio.isChecked():
+        elif self.infile_plot_radio.isChecked():
             in_state = 'plot'
-        if self.infile_plot_marker_radio.isChecked():
+        elif self.infile_plot_marker_radio.isChecked():
             in_state = 'plot+marker'
-        if self.infile_candle_radio.isChecked():
+        elif self.infile_candle_radio.isChecked():
             in_state = 'candle'
+        else:
+            QMessageBox.information(self, "메시지", "내부파일 그래프 타입을 선택하세요", QMessageBox.Yes)
+            return
 
         # 외부파일 그래프 타입 state
         out_state = ''
         if self.outfile_marker_radio.isChecked():
             out_state = 'marker'
-        if self.outfile_bar_radio.isChecked():
+        elif self.outfile_bar_radio.isChecked():
             out_state = 'bar'
-        if self.outfile_plot_radio.isChecked():
+        elif self.outfile_plot_radio.isChecked():
             out_state = 'plot'
-        if self.outfile_plot_marker_radio.isChecked():
+        elif self.outfile_plot_marker_radio.isChecked():
             out_state = 'plot+marker'
-        if self.outfile_candle_radio.isChecked():
+        elif self.outfile_candle_radio.isChecked():
             out_state = 'candle'
+        else:
+            QMessageBox.information(self, "메시지", "외부파일 그래프 타입을 선택하세요", QMessageBox.Yes)
+            return
 
         # 그래프 합성 or 병렬 옵션 반영
         # 합성
         if self.mergeRadio.isChecked():
             in_x_grid = self.x1_edit.text()
-            out_x_grid = self.x2_edit.text()
-            
             in_y_grid = self.y1_edit.text()
-            out_y_grid = self.y2_edit.text()
+            if in_x_grid == '':
+                QMessageBox.information(self, "메시지", "내부파일 x축을 입력하세요", QMessageBox.Yes)
+                return
+            if in_y_grid == '':
+                QMessageBox.information(self, "메시지", "내부파일 y축을 입력하세요", QMessageBox.Yes)
+                return
 
-            if self.innerFileEdit.text() == '':
-                QMessageBox.information(self, "메시지", "완전한 입력이 아닙니다. 다시 입력해주세요.", QMessageBox.Yes)
-            else:
-                self.canvas.draw_merge_graph(
-                                            root_path=self.root_path,
-                                            indf=self.infile_df, 
-                                            outdf=self.outfile_df, 
-                                            infile_x=in_x_grid, 
-                                            infile_y=in_y_grid, 
-                                            outfile_x=out_x_grid, 
-                                            outfile_y=out_y_grid, 
-                                            in_state=in_state, 
-                                            out_state=out_state
-                                            )
+            out_x_grid = self.x2_edit.text()            
+            out_y_grid = self.y2_edit.text()
+            if out_x_grid == '':
+                QMessageBox.information(self, "메시지", "외부파일 x축을 입력하세요", QMessageBox.Yes)
+                return
+            if out_y_grid == '':
+                QMessageBox.information(self, "메시지", "외부파일 y축을 입력하세요", QMessageBox.Yes)
+                return
+
+            self.canvas.draw_merge_graph(
+                                        root_path=self.root_path,
+                                        indf=self.infile_df, 
+                                        outdf=self.outfile_df, 
+                                        infile_x=in_x_grid, 
+                                        infile_y=in_y_grid, 
+                                        outfile_x=out_x_grid, 
+                                        outfile_y=out_y_grid, 
+                                        in_state=in_state, 
+                                        out_state=out_state
+                                        )
 
         # 병렬
         elif self.parallelRadio.isChecked():
@@ -394,6 +414,20 @@ class comPreChart_editor(QWidget):
 
             outfile_x_grid = self.outfile_x_edit.text()
             outfile_y_grid = self.outfile_y_edit.text()
+
+            if infile_x_grid == '':
+                QMessageBox.information(self, "메시지", "내부파일 x축을 입력하세요", QMessageBox.Yes)
+                return
+            if infile_y_grid == '':
+                QMessageBox.information(self, "메시지", "내부파일 y축을 입력하세요", QMessageBox.Yes)
+                return
+
+            if outfile_x_grid == '':
+                QMessageBox.information(self, "메시지", "외부파일 x축을 입력하세요", QMessageBox.Yes)
+                return
+            if outfile_y_grid == '':
+                QMessageBox.information(self, "메시지", "외부파일 y축을 입력하세요", QMessageBox.Yes)
+                return
             
             self.canvas.draw_parallel_graph(
                                             root_path=self.root_path,
@@ -413,6 +447,7 @@ class comPreChart_editor(QWidget):
         self.x1_edit.hide()
         self.x2_label.hide()
         self.x2_edit.hide()
+        # 합성 모드 내부/외부 파일 y축
         self.y1_label.hide()
         self.y1_edit.hide()
         self.y2_label.hide()
@@ -432,11 +467,14 @@ class comPreChart_editor(QWidget):
             self.x1_edit.show()
             self.x2_label.show()
             self.x2_edit.show()
+
+            # 합성 모드 내부/외부 파일 y축
             self.y1_label.show()
             self.y1_edit.show()
             self.y2_label.show()
             self.y2_edit.show()
 
+            # 내부, 외부 파일 조인 기준컬럼
             self.infile_x_label.hide()
             self.infile_x_edit.hide()
             self.infile_y_label.hide()

@@ -55,13 +55,10 @@ class PlotCanvas(QWebEngineView):
             fig.update_yaxes(title='Profit Ratio(%)', secondary_y=False)
 
         # 기본 주가 수익률
-        if state == 'basic_profit':
-            copy_trading_df.reset_index(inplace=True)
-            copy_trading_df['basic_profit'] = ((copy_trading_df.loc[:, ['price']] / copy_trading_df.loc[0, ['price']]) - 1) * 100
+        if state == 'basic_profit':            
+            copy_trading_df.reset_index(inplace=True)            
+            copy_trading_df['basic_profit'] = ((copy_trading_df.loc[:, ['price']] / copy_trading_df.loc[0, ['price']]) - 1) * 100            
             copy_trading_df.set_index('order_datetime', inplace=True)
-
-            print(copy_trading_df)
-
             basic_profit_chart = go.Scatter(x=copy_trading_df.index, y=copy_trading_df['basic_profit'],
                                 mode='lines+markers', showlegend=True,
                                 name='주가 수익률',

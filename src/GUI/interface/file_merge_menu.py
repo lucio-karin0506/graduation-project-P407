@@ -248,6 +248,7 @@ class file_merge_editor(QWidget):
     # 사용자가 입력한 내부파일에 대하여 컬럼 리스트 보여줌
     def display_inFile_column(self):
         fileDir = self.inFile_edit.text()
+
         self.inFileName = self.inFile_edit.text().split('/')[-1] # 삼전_d.csv
 
         # 다이얼로그 종료 시 저장할 때 필요한 이름 정보 전달에 사용
@@ -257,6 +258,7 @@ class file_merge_editor(QWidget):
         if fileType == 'csv':
             df = pd.read_csv(fileDir, index_col=0)
             df.reset_index(inplace=True)
+
         elif fileType == 'json':
             file = pathlib.Path(fileDir)
             text = file.read_text(encoding='utf-8')
@@ -351,32 +353,45 @@ class file_merge_editor(QWidget):
         self.left_on = self.inFile_join_col_edit.text()
         self.right_on = self.outFile_join_col_edit.text()
 
+        if self.inFile_edit.text() == '':
+            QMessageBox.information(self, "메시지", "내부파일을 입력하세요.", QMessageBox.Yes)
+            return 
+
+        if self.outFile_edit.text() == '':
+            QMessageBox.information(self, "메시지", "외부파일을 입력하세요.", QMessageBox.Yes)
+            return 
+
         # 조인 옵션 반영
         if self.df_join_left_radio.isChecked():
             self.left_join = 'left'
 
         if self.left_on == '' or self.right_on == '':
-            QMessageBox.information(self, "메시지", "조인할 컬럼을 지정하지 않았습니다. 컬럼명을 입력해주세요.", QMessageBox.Yes)
+            QMessageBox.information(self, "메시지", "조인할 컬럼을 지정하지 않았습니다. 컬럼명을 입력하세요.", QMessageBox.Yes)
+            return
 
         if self.inFile_df[self.left_on].dtype == self.outFile_df[self.right_on].dtype:
             merge_df = pd.merge(self.inFile_df, self.outFile_df, how=self.left_join, left_on=str(self.left_on), right_on=str(self.right_on))            
         else:
-            QMessageBox.information(self, "메시지", "두 컬럼의 데이터 종류가 다릅니다. 다시 입력해주세요.", QMessageBox.Yes)
+            QMessageBox.information(self, "메시지", "두 컬럼의 데이터 종류가 다릅니다. 다시 입력하세요.", QMessageBox.Yes)
             self.inFile_join_col_edit.setText('')
-            self.outFile_join_col_edit.setText('')       
+            self.outFile_join_col_edit.setText('')
+            return          
 
         # 공백 데이터 옵션 반영
         if self.null_radio.isChecked():
             merge_df = merge_df
-        if self.avg_radio.isChecked():
+        elif self.avg_radio.isChecked():
             merge_df.fillna(merge_df.mean(), inplace=True)
-        if self.forward_radio.isChecked():
+        elif self.forward_radio.isChecked():
             merge_df.fillna(method='ffill', inplace=True)
-        if self.backward_radio.isChecked():
+        elif self.backward_radio.isChecked():
             merge_df.fillna(method='bfill', inplace=True)
-        if self.default_radio.isChecked():
+        elif self.default_radio.isChecked():
             default_val = self.default_edit.text()
             merge_df.fillna(int(default_val), inplace=True)
+        else:
+            QMessageBox.information(self, "메시지", "공백데이터 옵션을 체크하세요", QMessageBox.Yes)
+            return
 
         self.display_merge_df(merge_df)
 

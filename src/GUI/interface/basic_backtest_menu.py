@@ -162,7 +162,6 @@ class basic_backtest_editor(QWidget):
         vlay2.addWidget(self.static_table_label)
         vlay2.addWidget(self.static_table)
 
-        # leftLayout.addLayout(vlay1)
         leftLayout.addLayout(vlay2)
 
         # 수익률 그래프 위젯
@@ -215,14 +214,39 @@ class basic_backtest_editor(QWidget):
         2. simulator 모듈에 전달
         *** treeview item 선택 시 파일정보 받는 것 나중에 생각 일단은 drag&drop 으로 처리
     '''
-    def get_order_info(self):
+    def get_order_info(self):        
         # simulator infos
+        if self.order_file_edit.text() == '':
+            QMessageBox.information(self, "메시지", "주문파일을 입력하세요", QMessageBox.Yes)
+            return
         self.file_name = self.file_path.split('/')[-1]
+            
         self.cash = self.init_money_edit.text()
+        if self.cash == '':
+            QMessageBox.information(self, "메시지", "운용금액을 입력하세요", QMessageBox.Yes)
+            return
+
         self.buying_fee = self.buying_fee_edit.text()
+        if self.buying_fee == '':
+            QMessageBox.information(self, "메시지", "매수 수수료를 입력하세요", QMessageBox.Yes)
+            return
+
         self.selling_fee = self.selling_fee_edit.text()
+        if self.selling_fee == '':
+            QMessageBox.information(self, "메시지", "매도 수수료를 입력하세요", QMessageBox.Yes)
+            return
+
         self.national_tax = self.national_tax_edit.text()
+        if self.national_tax == '':
+            QMessageBox.information(self, "메시지", "세금을 입력하세요", QMessageBox.Yes)
+            return
+
         self.slippage = self.slippage_edit.text()
+        if self.slippage == '':
+            QMessageBox.information(self, "메시지", "슬리피지를 입력하세요", QMessageBox.Yes)
+            return
+
+
         if self.net_radio.isChecked():
             self.net = True
         else:
@@ -234,10 +258,13 @@ class basic_backtest_editor(QWidget):
             self.period = ''
             if self.week_radio.isChecked():
                 self.period = 'week'
-            if self.month_radio.isChecked():
+            elif self.month_radio.isChecked():
                 self.period = 'month'
-            if self.year_radio.isChecked():
+            elif self.year_radio.isChecked():
                 self.period = 'year'
+            else:
+                QMessageBox.information(self, "메시지", "기간옵션을 체크하세요", QMessageBox.Yes)
+                return
 
             self.make_cal_json()
         else:

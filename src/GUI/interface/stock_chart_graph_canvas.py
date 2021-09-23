@@ -20,7 +20,7 @@ logging.getLogger().setLevel(logging.CRITICAL)
 class PlotCanvas(QWebEngineView):
 
     def __init__(self):
-        super().__init__()
+        super().__init__()        
 
     def draw_graph(self, path, root_path, interval='', state='', 
                   period='', target='', 
@@ -35,7 +35,7 @@ class PlotCanvas(QWebEngineView):
                   ):
 
         stock_file = os.path.split(path)        
-        selected_stock_name = stock_file[1].replace('.csv', '')
+        selected_stock_name = stock_file[1].replace('.csv', '')        
         stock_file = path.split('/')[-1]
 
         # 일봉 파일
@@ -80,13 +80,13 @@ class PlotCanvas(QWebEngineView):
                                 )
 
         # 거래량
-        # volume_chart = go.Bar(x=copy_df.index, y=copy_df['volume'],
-        #                         showlegend=True,
-        #                         name='거래량', yaxis='y2'
-        #                         )
+        volume_chart = go.Bar(x=copy_df.index, y=copy_df['volume'],
+                                showlegend=True,
+                                name='거래량', yaxis='y2'
+                                )
     
         fig.add_trace(stock_candle, secondary_y=False)
-        # fig.add_trace(volume_chart)
+        fig.add_trace(volume_chart)
 
         # 기술적 지표
         # 이평선

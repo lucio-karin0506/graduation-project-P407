@@ -133,6 +133,66 @@ class order_editor(QWidget):
         self.item_cluster_ex = QTreeWidgetItem(self.item_cluster)
         self.item_cluster_ex.setText(0, 'clustering(n_clusters=2, target="close", period="1y", slide_size="1m")')
 
+        self.item_dema = QTreeWidgetItem(stock_tech_indi)
+        self.item_dema.setText(0, 'DEMA')
+        self.item_dema_ex = QTreeWidgetItem(self.item_dema)
+        self.item_dema_ex.setText(0, "dema(period=30, target='close')")
+
+        self.item_tema = QTreeWidgetItem(stock_tech_indi)
+        self.item_tema.setText(0, 'TEMA')
+        self.item_tema_ex = QTreeWidgetItem(self.item_tema)
+        self.item_tema_ex.setText(0, "tema(period=30, target='close')")
+
+        self.item_t3 = QTreeWidgetItem(stock_tech_indi)
+        self.item_t3.setText(0, 'T3')
+        self.item_t3_ex = QTreeWidgetItem(self.item_t3)
+        self.item_t3_ex.setText(0, "t3(period=30, target='close')")
+
+        self.item_mom = QTreeWidgetItem(stock_tech_indi)
+        self.item_mom.setText(0, 'Momentum')
+        self.item_mom_ex = QTreeWidgetItem(self.item_mom)
+        self.item_mom_ex.setText(0, "mom(period=10, target='close')")
+
+        self.item_mfi = QTreeWidgetItem(stock_tech_indi)
+        self.item_mfi.setText(0, 'Money Flow Index')
+        self.item_mfi_ex = QTreeWidgetItem(self.item_mfi)
+        self.item_mfi_ex.setText(0, "mfi(period=14)")
+
+        self.item_trix = QTreeWidgetItem(stock_tech_indi)
+        self.item_trix.setText(0, 'TRIX')
+        self.item_trix_ex = QTreeWidgetItem(self.item_trix)
+        self.item_trix_ex.setText(0, "trix(period=30, target='close')")
+
+        self.item_roc = QTreeWidgetItem(stock_tech_indi)
+        self.item_roc.setText(0, 'Rate of change')
+        self.item_roc_ex = QTreeWidgetItem(self.item_roc)
+        self.item_roc_ex.setText(0, "roc(period=10, target='close')")
+
+        self.item_cci = QTreeWidgetItem(stock_tech_indi)
+        self.item_cci.setText(0, 'Commodity Channel Index')
+        self.item_cci_ex = QTreeWidgetItem(self.item_cci)
+        self.item_cci_ex.setText(0, "cci(period=14)")
+
+        self.item_willr = QTreeWidgetItem(stock_tech_indi)
+        self.item_willr.setText(0, "WILLR(Williams' %R)")
+        self.item_willr_ex = QTreeWidgetItem(self.item_willr)
+        self.item_willr_ex.setText(0, "willr(period=14)")
+
+        self.item_bop = QTreeWidgetItem(stock_tech_indi)
+        self.item_bop.setText(0, 'BOP(Balance Of Power)')
+        self.item_bop_ex = QTreeWidgetItem(self.item_bop)
+        self.item_bop_ex.setText(0, "bop()")
+
+        self.item_ad = QTreeWidgetItem(stock_tech_indi)
+        self.item_ad.setText(0, 'AD(Chaikin A/D Line)')
+        self.item_ad_ex = QTreeWidgetItem(self.item_ad)
+        self.item_ad_ex.setText(0, "ad()")
+
+        self.item_adosc = QTreeWidgetItem(stock_tech_indi)
+        self.item_adosc.setText(0, 'DEMA')
+        self.item_adosc_ex = QTreeWidgetItem(self.item_adosc)
+        self.item_adosc_ex.setText(0, "adosc(fast_period=3, slow_period=10)")
+
         #--------------------------------------------------------------------------------------------------------------
         stock_label_indi = QTreeWidgetItem(['레이블지표'])
         self.indi_display_tree.addTopLevelItem(stock_label_indi)
@@ -266,6 +326,7 @@ class order_editor(QWidget):
         self.dailyRadio = QRadioButton('일봉')
         self.dailyRadio.setChecked(True)
         self.weeklyRadio = QRadioButton('주봉')
+
         self.intervalLayout.addWidget(self.dailyRadio)
         self.intervalLayout.addWidget(self.weeklyRadio)
         self.typeGroupBox.setLayout(self.intervalLayout)
@@ -507,12 +568,15 @@ class order_editor(QWidget):
         4. stock_interval
     '''
     def get_strategy_info(self):
-        if self.local_Mode.isChecked():           
-            if self.stock_use_local_edit.text().find('file:') == -1:
+        if self.local_Mode.isChecked():                                   
+            if self.stock_use_local_edit.text() == '':
+                QMessageBox.information(self, "메시지", "적용종목을 입력하세요", QMessageBox.Yes)
+                return
+            elif self.stock_use_local_edit.text().find('file:') == -1:
                 file_path = self.stock_use_local_edit.text()
             else:
                 file_path = self.stock_use_local_edit.text().split('///')[1]
-
+            
             file_name = file_path.split('/')[-1]
 
             self.stock_name = file_name.replace('.csv', '')[:-2]
@@ -520,23 +584,30 @@ class order_editor(QWidget):
             self.startDate = self.start_date.text()
             self.endDate = self.end_date.text()
 
+            if self.strategy_edit_text.toPlainText() == '':           
+                QMessageBox.information(self, "메시지", "전략을 입력하세요", QMessageBox.Yes)
+                return
+
             # stock_name을 KRX 파일을 참조하여 stock_code로 변환
             stock_df = self.KRX_df[['Symbol', 'Name']]
             self.stock_code = stock_df.loc[stock_df.Name == self.stock_name, 'Symbol'].values[0]
 
-             # 지표 선언식 문자열 가공
+            # 지표 선언식 문자열 가공
             self.indi_local_info = self.indi_local_edit_text.toPlainText().strip()
             self.indi_local_info = self.indi_local_info.split('\n')
             self.indi_local_info_list = []
             for i in self.indi_local_info:
                 self.indi_local_info_list.append(i)
 
-            self.network = False   
-         
+            self.network = False            
             self.make_json(file_path)
 
         elif self.net_Mode.isChecked():
             self.stock_code = self.stock_use_net_edit.text()[0:6]
+            if self.stock_code == '':
+                QMessageBox.information(self, "메시지", "적용종목을 입력하세요", QMessageBox.Yes)
+                return
+
             self.startDate = self.start_date.text()
             self.endDate = self.end_date.text()
 
@@ -544,6 +615,13 @@ class order_editor(QWidget):
                 self.stock_interval = 'd'
             elif self.weeklyRadio.isChecked():
                 self.stock_interval = 'w'
+            else:
+                QMessageBox.information(self, "메시지", "봉타입을 체크하세요", QMessageBox.Yes)
+                return
+
+            if self.strategy_net_edit_text.toPlainText() == '':           
+                QMessageBox.information(self, "메시지", "전략을 입력하세요", QMessageBox.Yes)
+                return
 
             # 입력한 stock_code를 KRX 파일을 참조하여 stock_name으로 변환
             stock_df = self.KRX_df
@@ -551,14 +629,13 @@ class order_editor(QWidget):
             self.stock_name = stock_df.loc[stock_df.Symbol == self.stock_code, 'Name'].values[0]
 
             # 지표 선언식 문자열 가공
-            self.indi_info = self.indi_edit_text.toPlainText().strip()
+            self.indi_info = self.indi_edit_text.toPlainText().strip()            
             self.indi_info = self.indi_info.split('\n')
             self.indi_info_list = []
             for i in self.indi_info:
                 self.indi_info_list.append(i)
 
             self.network = True
-
             self.make_json()
 
     '''
@@ -584,7 +661,7 @@ class order_editor(QWidget):
                             'interval': str(self.stock_interval),
                             'indicator': self.indi_info_list,
                             'strategy': str(self.strategy_net_edit_text.toPlainText())
-                           }
+                            }
 
         strategy_list_dic = [strategy_dic]
 
@@ -607,10 +684,9 @@ class order_editor(QWidget):
 
         # order creator 모듈에 json 파일 전달
         order_creator = OrderCreator(
-                                        network=self.network,
-                                        mix=False,
-                                        root_path=self.root_path
-                                    )
+                                    network=self.network,
+                                    mix=False,
+                                    root_path=self.root_path)
 
         if self.network == True:            
             order_creator.read_file(strategy_file, full_path=True)
@@ -648,7 +724,7 @@ class order_editor(QWidget):
     def dropEvent(self, e):
         file_path = e.mimeData().text()
         file_type = file_path.split('.')[-1]
-
+        
         if file_type == 'csv':
             self.stock_use_local_edit.setText(e.mimeData().text())
         else:
@@ -673,6 +749,7 @@ class order_editor(QWidget):
         self.stock_use_local_edit.hide()
         self.indi_edit_label.show()
         self.indi_edit_text.show()
+
         self.typeGroupBox.show()
         self.stock_use_net_edit.show()
         self.strategy_net_edit_text.show()
@@ -687,6 +764,7 @@ class order_editor(QWidget):
             self.stock_indi_btn.show()
             self.indi_local_edit_label.show()
             self.indi_local_edit_text.show()
+
             self.stock_use_local_edit.show()
             self.strategy_edit_text.show()
 

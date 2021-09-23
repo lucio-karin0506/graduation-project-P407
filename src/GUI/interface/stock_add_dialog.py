@@ -10,8 +10,8 @@ from GUI.interface import directory_tree
 
 '''
 다이얼로그
-    1. 주가 종목 검색
-    2. 추가버튼 클릭 후 csv 파일 생성 in directory tree
+1. 주가 종목 검색
+2. 추가버튼 클릭 후 csv 파일 생성 in directory tree
 '''
 class stock_add(QDialog):
     def __init__(self, root_path):
@@ -28,7 +28,7 @@ class stock_add(QDialog):
         self.center()
         layout = QVBoxLayout()
 
-        # 종목 이름 리스트
+        # 종목 이름 리스트        
         self.gathering = Gatherer(krx=True, path=self.root_path)
         self.trees_widget = directory_tree.DirectoryTreeView()
 
@@ -40,7 +40,7 @@ class stock_add(QDialog):
             stock_names = ' '.join(i)
             widget_names.append(stock_names)
         self.widgets = []
-
+        
         # 종목 이름 검색
         upperLayout = QHBoxLayout()
         self.stock_code_label = QLabel('종목이름')
@@ -65,7 +65,7 @@ class stock_add(QDialog):
         # 스크롤 설정
         scroll_bar = QScrollBar(self)
         self.stock_box.setVerticalScrollBar(scroll_bar)
-
+        
         # 종목 이름 리스트 아이템 선택
         self.stock_box.itemSelectionChanged.connect(self.on_change)
 
@@ -130,10 +130,9 @@ class stock_add(QDialog):
         if msg == QMessageBox.Yes:
             stock_add.close(self)
 
-    # 선택 종목 일봉 및 주봉 데이터 받아옴
-    def run_gathering(self, code, start_date='', end_date=''):
+    def run_gathering(self, code, start_date='', end_date=''):        
         self.gathering.get_stock(code, start_date, end_date, 'd', self.root_path)
-        self.gathering.get_stock(code, start_date, end_date, 'w', self.root_path)
+        self.gathering.get_stock(code, start_date, end_date, 'w', self.root_path) 
 
     def closeIt(self):
         stock_add.close(self)
@@ -141,10 +140,12 @@ class stock_add(QDialog):
     def showModal(self):
         return super().exec_()
 
+
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + "\\..\\"))
 dirname = os.path.dirname(PySide2.__file__)
 plugin_path = os.path.join(dirname, 'plugins', 'platforms')
 os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = plugin_path
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

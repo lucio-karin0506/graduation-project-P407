@@ -13,7 +13,7 @@ class DirectoryTreeView(QTreeView):
     def __init__(self):
         QTreeView.__init__(self)        
         self.model = QFileSystemModel()
-
+    
         self.setModel(self.model)
         self.setRootIndex(self.model.index(''))
         self.model.setReadOnly(False)
@@ -73,7 +73,7 @@ class DirectoryTreeView(QTreeView):
     def change_root_index(self, path):
         self.model.setRootPath(path)
         self.setRootIndex(self.model.index(path))
-
+        
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + "\\..\\"))
 dirname = os.path.dirname(PySide2.__file__)

@@ -300,31 +300,60 @@ class filtering_editor(QWidget):
     def get_filtering_info(self):
 
         self.startDate = self.start_date.text()
-        self.endDate = self.end_date.text()
-        self.interval = ''
+        self.endDate = self.end_date.text()        
 
         if self.dailyRadio.isChecked():
             self.interval = 'd'
         elif self.weeklyRadio.isChecked():
             self.interval = 'w'
+        else:
+            QMessageBox.information(self, "메시지", "봉타입을 체크하세요", QMessageBox.Yes)
+            return                    
 
         if self.strategy_edit.text().find('file:') == -1:
-            self.strategy_file = self.strategy_edit.text()
+            self.strategy_file = self.strategy_edit.text()        
         else:
             self.strategy_file = self.strategy_edit.text().split('///')[1]
+        
+        if self.stock_name_edit.text() == '':
+            QMessageBox.information(self, "메시지", "종목을 입력하세요", QMessageBox.Yes)
+            return
+
+        if self.strategy_edit.text() == '':
+            QMessageBox.information(self, "메시지", "전략을 입력하세요", QMessageBox.Yes)
+            return
 
         self.cash = self.init_money_edit.text()
+        if self.cash == '':
+            QMessageBox.information(self, "메시지", "운용금액을 입력하세요", QMessageBox.Yes)
+            return
+
         self.buying_fee = self.buying_fee_edit.text()
+        if self.buying_fee == '':
+            QMessageBox.information(self, "메시지", "매수 수수료를 입력하세요", QMessageBox.Yes)
+            return
+
         self.selling_fee = self.selling_fee_edit.text()
+        if self.selling_fee == '':
+            QMessageBox.information(self, "메시지", "매도 수수료를 입력하세요", QMessageBox.Yes)
+            return
+
         self.national_tax = self.national_tax_edit.text()
+        if self.national_tax == '':
+            QMessageBox.information(self, "메시지", "세금을 입력하세요", QMessageBox.Yes)
+            return
+
         self.slippage = self.slippage_edit.text()
+        if self.slippage == '':
+            QMessageBox.information(self, "메시지", "슬리피지를 입력하세요", QMessageBox.Yes)
+            return
 
         # 멀티 프로세스 체크 여부 확인
         if self.multi_radio.isChecked():
             multi = True
         else:
             multi = False
-
+        
         apply = Apply(multi=multi, path=self.root_path)
         apply.set_option(
                         self.selected_stock,

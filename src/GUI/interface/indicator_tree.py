@@ -24,8 +24,8 @@ class IndicatorTreeView(QTreeWidget):
     # 해당 종목 파일에 존재하는 지표 컬럼 및 해당 파라미터 가져옴
     def get_path(self, path):
         stock_file = os.path.split(path)
-        selected_stock_name = stock_file[1].replace('.csv', '')
-
+        selected_stock_name = stock_file[1].replace('.csv', '')        
+        
         # 지표 리스트 박스에서 선택한 종목 이름 텍스트 표시
         stock_name = QTreeWidgetItem([selected_stock_name])
         self.addTopLevelItem(stock_name)

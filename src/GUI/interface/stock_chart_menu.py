@@ -1,10 +1,10 @@
-import platform
 import PySide2
 import sys
 import os
 
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
+from PySide2 import QtCore
 
 from module.handling_file import get_refined_path
 from GUI.interface import stock_add_dialog, indicator_tree, stock_chart_graph_canvas
@@ -22,7 +22,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 '''
-    종목 차트 화면
+종목 차트 화면
 '''
 class stock_chart(QMainWindow):
     def __init__(self, root_path):
@@ -167,13 +167,13 @@ class stock_chart_editor(QWidget):
     # 차트 일, 주봉 변환
     def change_subplot(self):
         # 일봉 콤보 아이템 선택 시 일봉 차트
-        if self.cb_option.currentData() == 'd':
+        if self.cb_option.currentData() == 'd':            
             self.canvas.draw_graph(path=self.stock_path,
                                 root_path=self.root_path,
                                 interval='d')
 
         # 주봉 콤보 아이템 선택 시 주봉 차트
-        elif self.cb_option.currentData() == 'w':
+        elif self.cb_option.currentData() == 'w':            
             self.canvas.draw_graph(path=self.stock_path,
                                 root_path=self.root_path,
                                 interval='w')
